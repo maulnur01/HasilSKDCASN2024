@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard SKD CPNS 2024 – Kota Semarang</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ════════════ HEADER ════════════ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="header-logo">🏛️</div>
+      <div>
+        <div class="header-title">Dashboard SKD CPNS 2024</div>
+        <div class="header-sub">Pemerintah Kota Semarang · Panselnas BKN</div>
+      </div>
+    </div>
+
+    <nav class="header-nav">
+      <button class="nav-btn active" data-nav="dashboard">📊 Dashboard</button>
+      <button class="nav-btn" data-nav="rekap">📋 Rekap Peserta</button>
+      <button class="nav-btn" data-nav="jabatan">💼 Jabatan Formasi</button>
+    </nav>
+
+    <div class="header-badge">CPNS 2024</div>
+  </div>
+</header>
+
+<!-- ════════════ MAIN ════════════ -->
+<main class="main">
+
+  <!-- ── SECTION: DASHBOARD ── -->
+  <section id="section-dashboard" class="section active">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Ringkasan Seleksi SKD</div>
+        <div class="section-sub">Rekapitulasi Hasil Seleksi Kompetensi Dasar CPNS 2024 – Kota Semarang</div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card" style="--card-accent: linear-gradient(135deg,#38bdf8,#6366f1)">
+        <div class="stat-icon" style="--icon-bg:rgba(56,189,248,0.12)">👥</div>
+        <div class="stat-value" id="stat-total">-</div>
+        <div class="stat-label">Total Peserta SKD</div>
+        <div class="stat-sub">Seluruh formasi jabatan</div>
+      </div>
+      <div class="stat-card" style="--card-accent: linear-gradient(135deg,#c084fc,#818cf8)">
+        <div class="stat-icon" style="--icon-bg:rgba(192,132,252,0.12)">💼</div>
+        <div class="stat-value" id="stat-jabatan">-</div>
+        <div class="stat-label">Jabatan Formasi</div>
+        <div class="stat-sub">Formasi tersedia Kota Semarang</div>
+      </div>
+      <div class="stat-card" style="--card-accent: linear-gradient(135deg,#34d399,#06b6d4)">
+        <div class="stat-icon" style="--icon-bg:rgba(52,211,153,0.12)">✅</div>
+        <div class="stat-value" id="stat-lulus">-</div>
+        <div class="stat-label">Peserta Lulus PG</div>
+        <div class="stat-sub">Memenuhi Passing Grade (P & P/L)</div>
+      </div>
+      <div class="stat-card" style="--card-accent: linear-gradient(135deg,#fbbf24,#f59e0b)">
+        <div class="stat-icon" style="--icon-bg:rgba(251,191,36,0.12)">📈</div>
+        <div class="stat-value" id="stat-avg">-</div>
+        <div class="stat-label">Rata-rata Nilai SKD</div>
+        <div class="stat-sub">Total TWK + TIU + TKP</div>
+      </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span>🏆</span> Status Kelulusan Peserta</div>
+        <div id="chart-donut"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span>💼</span> Top 8 Jabatan Formasi (Jumlah Peserta)</div>
+        <div id="chart-jabatan"></div>
+      </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span>📊</span> Distribusi Nilai Total SKD</div>
+        <div id="chart-dist"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span>🎓</span> Sebaran Pendidikan Peserta</div>
+        <div id="chart-pendidikan"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION: REKAP PESERTA ── -->
+  <section id="section-rekap" class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Rekap Peserta SKD</div>
+        <div class="section-sub">Data lengkap semua peserta beserta nilai TWK, TIU, TKP, dan keterangan</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" id="btn-export">⬇ Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group" style="min-width:220px;flex:2">
+        <label>Cari Nama / No Peserta / Jabatan</label>
+        <input class="filter-input" id="filter-search" type="text" placeholder="Ketik nama, nomor peserta, atau jabatan…"/>
+      </div>
+      <div class="filter-group">
+        <label>Jabatan Formasi</label>
+        <select class="filter-select" id="filter-jabatan"><option value="">Semua Jabatan</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Jenis Formasi</label>
+        <select class="filter-select" id="filter-jenis"><option value="">Semua Jenis</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Pendidikan</label>
+        <select class="filter-select" id="filter-pendidikan"><option value="">Semua Pendidikan</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Keterangan</label>
+        <select class="filter-select" id="filter-keterangan">
+          <option value="">Semua</option>
+          <option value="P/L">P/L – Prioritas Lulus</option>
+          <option value="P">P – Lulus</option>
+          <option value="TL">TL – Tidak Lulus</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn-ghost" id="btn-reset">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <div class="table-title">Data Peserta SKD 2024</div>
+        <div class="table-count" id="table-count">Memuat data…</div>
+      </div>
+      <div class="table-scroll">
+        <table id="skd-table"></table>
+      </div>
+      <div class="pagination">
+        <span class="page-info" id="page-info"></span>
+        <div class="page-btns" id="page-btns"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION: JABATAN FORMASI ── -->
+  <section id="section-jabatan" class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Jabatan Formasi</div>
+        <div class="section-sub">46 jabatan formasi CPNS 2024 – Pemerintah Kota Semarang. Klik kartu untuk melihat peserta.</div>
+      </div>
+    </div>
+    <div class="jabatan-grid" id="jabatan-grid">
+      <div class="loading"><div class="spinner"></div> Memuat data jabatan…</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ════════════ MODAL DETAIL ════════════ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="modal-name" id="modal-name">-</div>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+
+    <div class="modal-grid">
+      <div class="modal-field full">
+        <label>No Peserta</label>
+        <div class="val" id="modal-peserta" style="font-family:'JetBrains Mono',monospace;color:#818cf8"></div>
+      </div>
+      <div class="modal-field full">
+        <label>Jabatan Formasi</label>
+        <div class="val" id="modal-jabatan"></div>
+      </div>
+      <div class="modal-field full">
+        <label>Lokasi Formasi</label>
+        <div class="val" id="modal-lokasi" style="font-size:12px;color:#94a3b8"></div>
+      </div>
+      <div class="modal-field">
+        <label>Pendidikan</label>
+        <div class="val" id="modal-pendidikan"></div>
+      </div>
+      <div class="modal-field">
+        <label>Tahun SKD</label>
+        <div class="val" id="modal-tahun"></div>
+      </div>
+      <div class="modal-field">
+        <label>Jenis Formasi</label>
+        <div class="val" id="modal-jenis"></div>
+      </div>
+      <div class="modal-field">
+        <label>Keterangan</label>
+        <div class="val" id="modal-ket"></div>
+      </div>
+    </div>
+
+    <div class="score-display">
+      <div class="score-box twk">
+        <div class="score-box-val" id="modal-twk">-</div>
+        <div class="score-box-lbl">TWK</div>
+      </div>
+      <div class="score-box tiu">
+        <div class="score-box-val" id="modal-tiu">-</div>
+        <div class="score-box-lbl">TIU</div>
+      </div>
+      <div class="score-box tkp">
+        <div class="score-box-val" id="modal-tkp">-</div>
+        <div class="score-box-lbl">TKP</div>
+      </div>
+      <div class="score-box total">
+        <div class="score-box-val" id="modal-total">-</div>
+        <div class="score-box-lbl">TOTAL</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
