@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard CPNS 2024 – Pemerintah Kota Semarang</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Upgraded font stack: Cormorant Garamond (ultra-formal display) + Libre Baskerville (elegant serif body) + Jost (clean UI) -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <img src="https://w7.pngwing.com/pngs/680/88/png-transparent-semarang-logo-symbol-cdr-symbol-miscellaneous-cdr-emblem.png" alt="Logo Kota Semarang" class="header-logo" />
+        <div class="header-text">
+          <span class="header-sub">PEMERINTAH KOTA SEMARANG</span>
+          <h1 class="header-title">Dashboard CPNS 2024</h1>
+          <span class="header-tagline">Rekap Seleksi Kompetensi Dasar (SKD)</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="data-source-badge" id="dataSourceBadge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          data.xlsx
+        </span>
+        <label class="btn-upload" for="xlsxInput" title="Upload file Excel CPNS">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Excel
+        </label>
+        <input type="file" id="xlsxInput" accept=".xlsx,.xls" style="display:none" />
+        <span class="upload-info" id="uploadInfo"></span>
+      </div>
+    </div>
+    <div class="header-stripe"></div>
+  </header>
+
+  <nav class="main-nav" id="mainNav">
+    <div class="nav-inner">
+      <button class="nav-btn active" data-view="overview" onclick="switchView('overview')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview &amp; Analisis
+      </button>
+      <button class="nav-btn" data-view="per-jabatan" onclick="switchView('per-jabatan')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Per Jabatan Formasi
+      </button>
+      <button class="nav-btn" data-view="peserta" onclick="switchView('peserta')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Daftar Peserta
+      </button>
+    </div>
+  </nav>
+
+  <main class="main-content">
+
+    <div id="loadingState" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Memuat data peserta CPNS 2024…</p>
+    </div>
+
+    <div id="errorState" class="empty-state" style="display:none">
+      <div class="empty-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </div>
+      <h2>Upload File Excel CPNS</h2>
+      <p>Silakan upload file Excel (.xlsx) data SKD CPNS 2024 untuk memulai dashboard.</p>
+      <p class="empty-format">Kolom yang dibutuhkan:<br/>
+        <code>Nama, Pendidikan, TWK, TIU, TKP, TOTAL, Keterangan, Instansi, Jabatan, Lokasi, Jenis, TahunSKD</code>
+      </p>
+      <label class="btn-upload-large" for="xlsxInput">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload File Excel (.xlsx)
+      </label>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div id="viewOverview" class="view" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">Ringkasan &amp; Analisis SKD</h2>
+        <p class="section-desc" id="overviewDesc"></p>
+      </div>
+      <div class="stat-cards" id="statCards"></div>
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h3 class="analytics-title">Proporsi Status Kelulusan</h3>
+          <div class="chart-wrap"><canvas id="chartStatus"></canvas></div>
+        </div>
+        <div class="analytics-card">
+          <h3 class="analytics-title">Distribusi Jenis Formasi</h3>
+          <div class="chart-wrap"><canvas id="chartJenis"></canvas></div>
+        </div>
+        <div class="analytics-card span-2">
+          <h3 class="analytics-title">Perbandingan Kelulusan per Jenis Formasi</h3>
+          <div class="chart-filter-row" id="lulusJenisFilterRow"></div>
+          <div class="chart-wrap chart-tall"><canvas id="chartLulusPerJenis"></canvas></div>
+        </div>
+        <div class="analytics-card">
+          <h3 class="analytics-title">Top 10 Jabatan – Rata-rata SKD Tertinggi</h3>
+          <div class="chart-wrap chart-tall"><canvas id="chartJabatan"></canvas></div>
+        </div>
+        <div class="analytics-card">
+          <h3 class="analytics-title">Top 10 Jabatan – Jumlah Peserta Terbanyak</h3>
+          <div class="chart-wrap chart-tall"><canvas id="chartJabatanCount"></canvas></div>
+        </div>
+        <div class="analytics-card">
+          <h3 class="analytics-title">Distribusi Nilai SKD</h3>
+          <div class="chart-wrap"><canvas id="chartDistribusi"></canvas></div>
+        </div>
+        <div class="analytics-card">
+          <h3 class="analytics-title">Perbandingan Rata-rata TWK · TIU · TKP</h3>
+          <div class="chart-wrap"><canvas id="chartSubtes"></canvas></div>
+        </div>
+        <div class="analytics-card span-2">
+          <h3 class="analytics-title">Top 10 Pendidikan Peserta</h3>
+          <div class="chart-wrap"><canvas id="chartPendidikan"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PER JABATAN -->
+    <div id="viewPerJabatan" class="view" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">Jabatan Formasi</h2>
+        <p class="section-desc" id="jabatanDesc"></p>
+      </div>
+      <div class="jabatan-toolbar">
+        <div class="jabatan-search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchJabatan" class="search-bar" placeholder="Cari jabatan formasi..." oninput="filterJabatan()" />
+        </div>
+        <div class="jabatan-filter-chips" id="jabatanFilterChips">
+          <button class="filter-chip active" data-jenis="semua" onclick="setJenisFilter('semua', this)">Semua</button>
+          <button class="filter-chip" data-jenis="UMUM" onclick="setJenisFilter('UMUM', this)">Umum</button>
+          <button class="filter-chip" data-jenis="DISABILITAS" onclick="setJenisFilter('DISABILITAS', this)">Disabilitas</button>
+          <button class="filter-chip" data-jenis="LULUSAN TERBAIK" onclick="setJenisFilter('LULUSAN TERBAIK', this)">Lulusan Terbaik</button>
+        </div>
+      </div>
+      <div class="jabatan-grid" id="jabatanGrid"></div>
+    </div>
+
+    <!-- DAFTAR PESERTA -->
+    <div id="viewPeserta" class="view" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">Daftar Peserta</h2>
+        <p class="section-desc" id="pesertaDesc"></p>
+      </div>
+      <div class="table-toolbar">
+        <input type="text" id="searchPeserta" class="search-bar" placeholder="Cari nama" oninput="filterPeserta()" />
+        <div class="filter-group">
+          <select id="filterKeterangan" class="filter-select" onchange="filterPeserta()">
+            <option value="">Semua Keterangan</option>
+            <option value="P/L">P/L – Lulus SKB</option>
+            <option value="P">P – Passing Grade</option>
+            <option value="TL">TL – Tidak Lulus</option>
+            <option value="TH">TH – Tidak Hadir</option>
+            <option value="TMS">TMS – Gugur Syarat</option>
+            <option value="DIS">DIS – Diskualifikasi</option>
+          </select>
+          <select id="filterJabatanSelect" class="filter-select" onchange="filterPeserta()">
+            <option value="">Semua Jabatan</option>
+          </select>
+          <select id="filterJenisSelect" class="filter-select" onchange="filterPeserta()">
+            <option value="">Semua Jenis Formasi</option>
+          </select>
+          <select id="filterPendidikanSelect" class="filter-select" onchange="filterPeserta()">
+            <option value="">Semua Pendidikan</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="pesertaTable">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama Peserta</th>
+              <th>Jabatan Formasi</th>
+              <th>Pendidikan</th>
+              <th>Jenis Formasi</th>
+              <th>Tahun SKD</th>
+              <th>TWK</th>
+              <th>TIU</th>
+              <th>TKP</th>
+              <th>Nilai SKD</th>
+              <th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody id="pesertaTbody"></tbody>
+        </table>
+      </div>
+      <div class="table-footer" id="tableFooter">
+        <span id="tableInfo"></span>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+    <!-- DETAIL PESERTA -->
+    <div id="viewDetailPeserta" class="view" style="display:none">
+      <div class="detail-page-back">
+        <button class="btn-back" onclick="closeDetailPage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Kembali ke Daftar
+        </button>
+      </div>
+      <div id="detailPageContent"></div>
+    </div>
+
+  </main>
+
+  <!-- MODAL DETAIL JABATAN -->
+  <div id="modalJabatanOverlay" class="modal-overlay" onclick="closeJabatanModal()">
+    <div class="modal-box modal-wide" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeJabatanModal()">✕</button>
+      <div id="modalJabatanContent"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
